@@ -1,8 +1,6 @@
 # CoVaya
 Do you feel that a specific short read company's SARS Cov 2 aligner sucks?Well, welcome to the club! This python code alignes your fastqs to the SARS Cov 2 genome and returns several statistics with a number of very well knonw freely available tools. 
 
-In order to use it please download and transfer on the same directory freebayes: https://github.com/freebayes/freebayes
-
 ## Dependencies
 
 This pipeline depends on the hard work of several teams that created truly amazing and helpful tools free of depending environments. This tools are 
