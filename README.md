@@ -27,10 +27,12 @@ The code has two more options
 1. For variant calling add --vcf True to the command:
   
     python CoVaya --input_path {DIR_NAME} --primers V4_primer_set.bed --reference reference/GCA_009858895.3.fasta --vcf True
-  
+
+
 2. To calculate which site are heterozygous add both --vcf True and --hetero_report True:
   
     python CoVaya --input_path {DIR_NAME} --primers V4_primer_set.bed --reference reference/GCA_009858895.3.fasta --vcf True --hetero_report True
+
 
 Bonus:
   Depending on your machine you can speed up the process by selecting --pools which defines the number of subprocesses the program performs. 
