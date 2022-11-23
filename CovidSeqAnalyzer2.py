@@ -52,13 +52,13 @@ def fastq_pipeline(sample_dir, work_dir , ref, vcf = False):
     fs2out = out_file + "/" + sample_number + "R2_clean.fastq.gz"
     #os.system("fastp -i {} -I {} -o {} -O {} -h {}/{}_fastp.html -j {}/{}_fastp.json".format(sample_dir +"/"+ os.listdir(sample_dir)[0], sample_dir + "/" + os.listdir(sample_dir)[1], fs1out, fs2out,out_file, sample_number, out_file, sample_number))
 
-    #os.system("bwa mem {} {} {} > {}/{}_aln_se.sam".format(ref, fs1out, fs2out, out_file, sample_number))
+    os.system("bwa mem {} {} {} > {}/{}_aln_se.sam".format(ref, fs1out, fs2out, out_file, sample_number))
     ##### add a step where primers are removed
-    #os.system("samtools sort {}/{}_aln_se.sam > {}/{}_sorted.bam".format(out_file, sample_number, out_file, sample_number))
-    #os.system("samtools index {}/{}_sorted.bam".format(out_file, sample_number))
-    #os.system("samtools consensus -f fasta {}/{}_sorted.bam -o {}/{}_consensus.fa ".format(out_file, sample_number, out_file, sample_number))
-    #os.system("samtools depth -a {}/{}_sorted.bam -o {}/{}_coverage.txt".format(out_file, sample_number, out_file, sample_number)) 
-    #os.system("samtools stats {}/{}_sorted.bam > {}/{}_stats.txt".format(out_file, sample_number, out_file, sample_number)) 
+    os.system("samtools sort {}/{}_aln_se.sam > {}/{}_sorted.bam".format(out_file, sample_number, out_file, sample_number))
+    os.system("samtools index {}/{}_sorted.bam".format(out_file, sample_number))
+    os.system("samtools consensus -f fasta {}/{}_sorted.bam -o {}/{}_consensus.fa ".format(out_file, sample_number, out_file, sample_number))
+    os.system("samtools depth -a {}/{}_sorted.bam -o {}/{}_coverage.txt".format(out_file, sample_number, out_file, sample_number)) 
+    os.system("samtools stats {}/{}_sorted.bam > {}/{}_stats.txt".format(out_file, sample_number, out_file, sample_number)) 
     
     if vcf :
         variant_calling(out_file,sample_number, ref)
@@ -199,10 +199,7 @@ def heterozygosity(sample_dir, primer_regions):
         callset = allel.read_vcf(i)
         gt = allel.GenotypeArray(callset['calldata/GT'])
         for g in range(0,len(gt)):
-            #print(gt)
-            if gt[g].is_het() and priming(callset['variants/POS'][g], primer_regions)[0] == 1 :
-            #print(, g+1, callset['variants/POS'][g], callset['variants/REF'][g])
-         
+            if gt[g].is_het() and priming(callset['variants/POS'][g], primer_regions)[0] == 1 :        
                 f.write(i + "\t" + priming(callset['variants/POS'][g], primer_regions)[1] + "\t" + callset['variants/REF'][g] +"\n" )
                 het_data[i.split("/")[-1].split("_")[0]]+=1
         f.close()  
@@ -237,31 +234,18 @@ items = [( f, args.input_path, args.reference , args.vcf) for f in files]
 
 os.system("mkdir {}results".format(args.input_path))
 
-#for i in items:
-#    print(i)
-#    fastq_pipeline(*i)
 
-
-'''
 with Pool(args.pools) as pool:
 # call the same function with different data in parallel
     for result in pool.starmap(fastq_pipeline, items):
         print(result)
 
-
-
-'''
 if args.hetero_report:
     primer_bed = pd.read_csv("V4_primer_set.bed", delimiter = "\t", header = None, names = ["ID", "START", "END", "DIRECTION","DIR_ID","STRAND","SEQUENCE"])
-
     het_dict = heterozygosity(args.input_path, primer_bed)
-    #het_file = open(args.input_path +"results/heterozygosity_stats.csv", "w")
-    print(het_dict)
-    #for sample in sorted(het_dict.keys()):
-    #    het_file.write(sample + "\t" + het_dict[sample])
-    #het_file.close()
+
     
     
 #print(read_plot(args.input_path))
-#coverage_plot(args.input_path)
-#quality_checks(args.input_path).to_csv(args.input_path +"results/read_stats.csv")
+coverage_plot(args.input_path)
+quality_checks(args.input_path).to_csv(args.input_path +"results/read_stats.csv")
